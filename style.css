@@ -1,0 +1,18 @@
+/* Container for the snake to move inside */
+#gameArea {
+    background-color: blue;
+    width: 500px;
+    height: 500px;
+    position: relative; /* So the child can be absolutely positioned */
+    margin-top: 10px;
+}
+
+/* The snake (just a red block for now) */
+#snake {
+    background-color: red;
+    width: 20px;
+    height: 20px;
+    position: absolute; /* Required for movement */
+    top: 0;
+    left: 0;
+}
