@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GameRooM</title>
+    <style>
+      /* Set font and center page */
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+
+      /* Game title style */
+      h1 {
+        color: #333;
+        font-size: 36px;
+        margin-bottom: 10px;
+      }
+
+      /* Score text style */
+      #score-board {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #444;
+      }
+
+      /* Main game area */
+      #game-board {
+        width: 1000px;
+        height: 1000px;
+        background-image: url("./public/bg.jpeg"); /* Background image */
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        border: 2px solid #333;
+      }
+
+      /* Snake head and body segment style */
+      #snake-head,
+      .snake-body-segment {
+        width: 20px;
+        height: 20px;
+        background-color: black;
+        position: absolute;
+      }
+
+      /* Food style */
+      #food {
+        background-color: red;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+      }
+
+      /* Control button area */
+      .control-buttons {
+        margin-top: 20px;
+      }
+
+      /* Style for each button */
+      .control-buttons button {
+        padding: 8px 20px;
+        margin: 0 10px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Game title -->
+    <h1>Snake Game</h1>
+
+    <!-- Scoreboard -->
+    <div id="score-board">Score <span id="score-value">0</span></div>
+
+    <!-- Game board where snake moves -->
+    <div id="game-board">
+      <div id="snake-head"></div>
+      <div id="food"></div>
+    </div>
+
+    <!-- Game control buttons -->
+    <div class="control-buttons">
+      <button id="start-button">Let's Play</button>
+      <button id="stop-button">Stop</button>
+    </div>
+
+    <script>
+      // Get elements from DOM
+      const snakeHead = document.getElementById("snake-head");
+      const food = document.getElementById("food");
+      const scoreDisplay = document.getElementById("score-value");
+      const startButton = document.getElementById("start-button");
+      const stopButton = document.getElementById("stop-button");
+      const gameBoard = document.getElementById("game-board");
+
+      // Game settings
+      const boardSize = 1000;
+      const cellSize = 20;
+      let direction = "right";
+      let gameSpeed = 50;
+      let gameTimer = null;
+      let score = 0;
+      let snakeSegments = [];
+      let isSpeedIncreased = false;
+
+      // Place food when game starts
+      placeFood();
+
+      // Event listeners for controls
+      startButton.addEventListener("click", startGame);
+      stopButton.addEventListener("click", stopGame);
+      document.addEventListener("keydown", changeDirection);
+
+      // Start game loop
+      function startGame() {
+        if (!gameTimer) {
+          gameTimer = setInterval(updateSnakePosition, gameSpeed);
+        }
+      }
+
+      // Stop game loop
+      function stopGame() {
+        clearInterval(gameTimer);
+        gameTimer = null;
+      }
+
+      // Update snake position and handle logic
+      function updateSnakePosition() {
+        let headX = parseInt(snakeHead.style.left) || 0;
+        let headY = parseInt(snakeHead.style.top) || 0;
+        let foodX = parseInt(food.style.left) || 0;
+        let foodY = parseInt(food.style.top) || 0;
+
+        // Check collision with food
+        if (headX === foodX && headY === foodY) {
+          snakeSegments.push([headX, headY]);
+          score++;
+          scoreDisplay.textContent = score;
+          placeFood();
+
+          // Speed up if score is 2
+          if (score === 2 && !isSpeedIncreased) {
+            gameSpeed = 130;
+            clearInterval(gameTimer);
+            gameTimer = setInterval(updateSnakePosition, gameSpeed);
+            isSpeedIncreased = true;
+          }
+        }
+
+        // Move snake body
+        for (let i = snakeSegments.length - 1; i > 0; i--) {
+          snakeSegments[i] = [...snakeSegments[i - 1]];
+        }
+        if (snakeSegments.length > 0) {
+          snakeSegments[0] = [headX, headY];
+        }
+
+        // Update head position based on direction
+        switch (direction) {
+          case "right":
+            headX += cellSize;
+            break;
+          case "left":
+            headX -= cellSize;
+            break;
+          case "down":
+            headY += cellSize;
+            break;
+          case "up":
+            headY -= cellSize;
+            break;
+        }
+
+        // Check collision with wall
+        if (
+          headX < 0 ||
+          headX >= boardSize ||
+          headY < 0 ||
+          headY >= boardSize
+        ) {
+          endGame();
+          return;
+        }
+
+        // Update head position on screen
+        snakeHead.style.left = headX + "px";
+        snakeHead.style.top = headY + "px";
+
+        // Remove previous body segments from DOM
+        document
+          .querySelectorAll(".snake-body-segment")
+          .forEach((segment) => segment.remove());
+
+        // Draw new body segments
+        snakeSegments.forEach(([x, y]) => {
+          const segment = document.createElement("div");
+          segment.classList.add("snake-body-segment");
+          segment.style.left = x + "px";
+          segment.style.top = y + "px";
+          gameBoard.appendChild(segment);
+        });
+      }
+
+      // Randomly place food on board
+      function placeFood() {
+        const maxIndex = boardSize / cellSize - 1;
+        const foodX = Math.floor(Math.random() * maxIndex) * cellSize;
+        const foodY = Math.floor(Math.random() * maxIndex) * cellSize;
+
+        const headX = parseInt(snakeHead.style.left) || 0;
+        const headY = parseInt(snakeHead.style.top) || 0;
+
+        if (foodX === headX && foodY === headY) {
+          placeFood(); // Avoid food on head
+          return;
+        }
+
+        food.style.left = foodX + "px";
+        food.style.top = foodY + "px";
+      }
+
+      // End the game and show result
+      function endGame() {
+        stopGame();
+        alert("Game is over your score: " + score);
+        resetGame();
+      }
+
+      // Reset game state to start again
+      function resetGame() {
+        score = 0;
+        scoreDisplay.textContent = score;
+        snakeHead.style.left = "0px";
+        snakeHead.style.top = "0px";
+        direction = "right";
+        snakeSegments = [];
+        gameSpeed = 200;
+        isSpeedIncreased = false;
+
+        // Remove old body segments
+        document
+          .querySelectorAll(".snake-body-segment")
+          .forEach((segment) => segment.remove());
+
+        placeFood();
+      }
+
+      // Change direction with keyboard keys
+      function changeDirection(e) {
+        switch (e.key) {
+          case "ArrowUp":
+            if (direction !== "down") direction = "up";
+            break;
+          case "ArrowDown":
+            if (direction !== "up") direction = "down";
+            break;
+          case "ArrowLeft":
+            if (direction !== "right") direction = "left";
+            break;
+          case "ArrowRight":
+            if (direction !== "left") direction = "right";
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>

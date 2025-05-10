@@ -1,2 +1,0 @@
-# snakegamejs
-university project 
