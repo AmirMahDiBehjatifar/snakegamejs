@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>انتخاب حالت بازی | دوز (X-O)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background: #f7faff;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Segoe UI", "Vazirmatn", "Roboto", Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 410px;
+        margin: 44px auto 0 auto;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(25, 130, 196, 0.1);
+        padding: 2.5rem 1.5rem 2.7rem 1.5rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .xo-animated {
+        margin: 0 auto 16px auto;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+      }
+      .xo-x,
+      .xo-o {
+        font-size: 2.9rem;
+        font-weight: bold;
+        display: inline-block;
+        animation: popXO 1.7s infinite alternate
+          cubic-bezier(0.7, 1.4, 0.4, 0.9);
+      }
+      .xo-o {
+        color: #1982c4;
+        animation-delay: 0.7s;
+      }
+      .xo-x {
+        color: #ff595e;
+      }
+      @keyframes popXO {
+        0% {
+          transform: scale(0.95) rotate(-7deg);
+        }
+        70% {
+          transform: scale(1.13) rotate(6deg);
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+      }
+
+      h1 {
+        font-size: 2rem;
+        color: #222;
+        font-weight: 700;
+        margin-bottom: 0.3em;
+        letter-spacing: 1px;
+      }
+      .board-preview {
+        margin: 1.3em auto 1.8em auto;
+        width: 210px;
+        height: 210px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 7px;
+        background: #e9e9f2;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px #1982c425;
+        justify-items: center;
+        align-items: center;
+      }
+      .cell-preview {
+        width: 62px;
+        height: 62px;
+        background: #fff;
+        border-radius: 12px;
+        font-size: 2.1rem;
+        color: #1982c4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        box-shadow: 0 1px 6px #1982c41a;
+        user-select: none;
+        transition: background 0.13s;
+      }
+      .cell-preview:nth-child(odd) {
+        color: #ff595e;
+      }
+      .cell-preview:nth-child(2),
+      .cell-preview:nth-child(6),
+      .cell-preview:nth-child(8) {
+        color: #ffc43a;
+      }
+
+      .game-mode-btn {
+        width: 82%;
+        max-width: 320px;
+        padding: 17px 0;
+        margin: 16px auto 0 auto;
+        font-size: 1.17rem;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(90deg, #1982c4 60%, #ffca3a 100%);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 1px 8px rgba(25, 130, 196, 0.07);
+        transition: background 0.18s, transform 0.14s;
+        display: block;
+        letter-spacing: 0.3px;
+      }
+      .game-mode-btn:hover,
+      .game-mode-btn:active {
+        background: linear-gradient(90deg, #ff595e 60%, #ffca3a 100%);
+        transform: scale(1.045);
+      }
+      .game-mode-btn:active {
+        filter: brightness(0.95);
+      }
+      .credit {
+        font-size: 0.99em;
+        color: #bbb;
+        margin-top: 2.4em;
+        text-align: center;
+      }
+      @media (max-width: 520px) {
+        .container {
+          max-width: 99vw;
+        }
+        .board-preview {
+          width: 92vw;
+          height: 92vw;
+          max-width: 210px;
+          max-height: 210px;
+        }
+        .cell-preview {
+          width: 28vw;
+          height: 28vw;
+          max-width: 62px;
+          max-height: 62px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="xo-animated">
+        <span class="xo-x">X</span>
+        <span class="xo-o">O</span>
+        <span class="xo-x">X</span>
+      </div>
+      <h1>بازی دوز (X-O)</h1>
+      <div class="board-preview" aria-hidden="true">
+        <div class="cell-preview">X</div>
+        <div class="cell-preview">O</div>
+        <div class="cell-preview">X</div>
+        <div class="cell-preview">O</div>
+        <div class="cell-preview"></div>
+        <div class="cell-preview">X</div>
+        <div class="cell-preview"></div>
+        <div class="cell-preview">O</div>
+        <div class="cell-preview"></div>
+      </div>
+      <button
+        class="game-mode-btn"
+        onclick="location.href='doz.html?mode=cpu&level=easy'"
+      >
+        بازی با کامپیوتر (آسون)
+      </button>
+      <button
+        class="game-mode-btn"
+        onclick="location.href='doz.html?mode=cpu&level=hard'"
+      >
+        بازی با کامپیوتر (سخت)
+      </button>
+      <button class="game-mode-btn" onclick="location.href='doz.html?mode=2p'">
+        بازی دو نفره
+      </button>
+    </div>
+    <div class="credit">طراحی شده با عشق توسط امیرمهدی</div>
+  </body>
+</html>

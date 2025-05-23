@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+    <meta charset="UTF-8">
+    <title>انتخاب حالت بازی</title>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 100px;
+            font-family: sans-serif;
+        }
+
+        .button {
+            padding: 15px 30px;
+            margin: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>بازی دوز (X-O)</h1>
+    <button class="button" onclick="location.href='doz.html?mode=cpu&level=easy'">بازی با کامپیوتر (آسون)</button>
+    <br>
+    <button class="button" onclick="location.href='doz.html?mode=cpu&level=hard'">بازی با کامپیوتر (سخت)</button>
+    <br>
+    <button class="button" onclick="location.href='doz.html?mode=2p'">بازی دو نفره</button>
+
+</body>
+
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rock Paper Scissors | Two Player Keyboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        background: #f7faff;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+        min-height: 100vh;
+      }
+      .rps-hint-outside {
+        text-align: center;
+        margin-bottom: 28px;
+        margin-top: 32px;
+        font-size: 1.03rem;
+        color: #888;
+        background: #f2f8ff;
+        border-radius: 8px;
+        padding: 0.7em 0.5em;
+        line-height: 1.7;
+        max-width: 490px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .rps-hint-outside b {
+        color: #1982c4;
+      }
+      .rps-container {
+        max-width: 420px;
+        margin: 16px auto 42px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(25, 130, 196, 0.1);
+        padding: 2rem 1.5rem 2.5rem 1.5rem;
+        text-align: center;
+        position: relative;
+      }
+      .rps-hint-label {
+        color: #ff595e;
+        font-size: 1.18rem;
+        font-weight: 500;
+        margin-bottom: 1.1em;
+        display: block;
+        letter-spacing: 0.03em;
+      }
+      .rps-hint-icons {
+        display: flex;
+        justify-content: center;
+        gap: 2.2rem;
+        margin-bottom: 22px;
+      }
+      .rps-hint-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff595e 0%, #ffca3a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        box-shadow: 0 2px 8px rgba(25, 130, 196, 0.09);
+      }
+      .rps-hint-icon:nth-child(2) {
+        background: linear-gradient(135deg, #1982c4 0%, #6a4c93 100%);
+      }
+      .rps-hint-icon:nth-child(3) {
+        background: linear-gradient(135deg, #ffca3a 0%, #ff595e 100%);
+      }
+      .rps-hint-icon span {
+        font-size: 2.15rem;
+        display: block;
+        line-height: 1;
+        margin: 0 auto;
+        user-select: none;
+      }
+      .rps-title {
+        font-size: 1.45rem;
+        font-weight: bold;
+        margin-bottom: 1.2rem;
+      }
+      .rps-moves-show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2.2rem;
+        margin-bottom: 0.7rem;
+        margin-top: 0.5rem;
+        min-height: 64px;
+      }
+      .rps-move-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.14rem;
+      }
+      .rps-move-label {
+        font-size: 1rem;
+        color: #888;
+        margin-bottom: 0.18rem;
+        letter-spacing: 0.6px;
+      }
+      .rps-move-emoji {
+        min-width: 52px;
+        min-height: 52px;
+        text-align: center;
+        font-size: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: popIn 0.5s cubic-bezier(0.6, 2, 0.4, 0.9);
+      }
+      .rps-vs {
+        font-size: 1.55rem;
+        font-weight: bold;
+        color: #ff595e;
+        margin: 0 0.5rem;
+        letter-spacing: 2px;
+        animation: pulseVs 1s infinite alternate;
+        user-select: none;
+      }
+      @keyframes pulseVs {
+        0% {
+          color: #ff595e;
+          transform: scale(1);
+          text-shadow: 0 2px 10px #ff595e44;
+        }
+        100% {
+          color: #1982c4;
+          transform: scale(1.18);
+          text-shadow: 0 4px 16px #1982c488;
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0.7) rotate(-30deg);
+          opacity: 0.2;
+        }
+        80% {
+          transform: scale(1.18) rotate(7deg);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+      }
+      .rps-status {
+        font-size: 1.13rem;
+        min-height: 28px;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+        margin-top: 0.7rem;
+        letter-spacing: 0.1px;
+        color: #ff595e;
+        text-shadow: 0 2px 10px #ffca3a33, 0 1px 1px #fff;
+        animation: popIn 0.4s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.win {
+        color: #16b500;
+        text-shadow: 0 1px 8px #8ac92644;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.lose {
+        color: #ff595e;
+        text-shadow: 0 1px 8px #ff595e33;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.tie {
+        color: #1982c4;
+        text-shadow: 0 1px 8px #1982c433;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-score {
+        margin: 1.2rem 0 0.5rem 0;
+        font-size: 1.08rem;
+        color: #888;
+      }
+      .rps-reset {
+        margin-top: 1.3rem;
+        background: #fff;
+        border: 2px solid #ff595e;
+        color: #ff595e;
+        border-radius: 8px;
+        padding: 0.45em 1.2em;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .rps-home {
+        margin-top: 1.3rem;
+        background: #fff;
+        border: 2px solid #09ff00;
+        color: #0d0106;
+        border-radius: 8px;
+        padding: 0.45em 1.2em;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .rps-reset:hover {
+        background: #ff595e;
+        color: #fff;
+      }
+      .rps-player-turn {
+        font-size: 1.09rem;
+        font-weight: 500;
+        color: #1982c4;
+        margin-bottom: 0.3rem;
+        margin-top: 0.4rem;
+        letter-spacing: 0.6px;
+        min-height: 21px;
+      }
+      @media (max-width: 520px) {
+        .rps-container {
+          max-width: 99vw;
+        }
+        .rps-moves-show {
+          gap: 0.6rem;
+        }
+        .rps-hint-icons {
+          gap: 0.7rem;
+        }
+        .rps-hint-outside {
+          padding: 0.7em 0.13em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rps-hint-outside">
+      <b>Player 1</b>: A=✊ S=✋ D=✌️ &nbsp; | &nbsp; <b>Player 2</b>: NumPad
+      1=✊ 2=✋ 3=✌️<br />
+      <span style="font-size: 0.98em"
+        >Ready? Each player presses their key in turn when prompted.</span
+      >
+    </div>
+    <div class="rps-container">
+      <div class="rps-title">
+        Rock Paper Scissors
+        <span style="color: #1982c4; font-size: 1rem">Two Player</span>
+      </div>
+      <span class="rps-hint-label">Choose your move!</span>
+      <div class="rps-hint-icons">
+        <span class="rps-hint-icon" title="Rock"><span>✊</span></span>
+        <span class="rps-hint-icon" title="Paper"><span>✋</span></span>
+        <span class="rps-hint-icon" title="Scissors"><span>✌️</span></span>
+      </div>
+      <div class="rps-moves-show" id="rps-moves-show">
+        <div class="rps-move-block">
+          <span class="rps-move-label">Player 1</span>
+          <span class="rps-move-emoji" id="p1-move">❔</span>
+        </div>
+        <span class="rps-vs">VS</span>
+        <div class="rps-move-block">
+          <span class="rps-move-label">Player 2</span>
+          <span class="rps-move-emoji" id="p2-move">❔</span>
+        </div>
+      </div>
+      <div class="rps-player-turn" id="player-turn">
+        Player 1, press your key!
+      </div>
+      <div class="rps-status" id="rps-status">&nbsp;</div>
+      <div class="rps-score" id="rps-score">P1: 0 | P2: 0</div>
+      <button class="rps-reset" id="rps-reset">Reset</button>
+      <button
+        class="rps-home"
+        id="rps-home"
+        onclick="window.location.href='../RPSGamev0/rps.html'"
+      >
+        Play with computer
+      </button>
+    </div>
+    <script>
+      const choices = ["rock", "paper", "scissors"];
+      const emojis = { rock: "✊", paper: "✋", scissors: "✌️" };
+      const p1Keys = { a: "rock", s: "paper", d: "scissors" };
+      const p2Keys = { Numpad1: "rock", Numpad2: "paper", Numpad3: "scissors" };
+
+      let p1Score = 0,
+        p2Score = 0;
+      let p1Choice = null,
+        p2Choice = null;
+      let turn = 1; // 1 = Player 1, 2 = Player 2, 0 = round complete
+
+      const statusDiv = document.getElementById("rps-status");
+      const scoreDiv = document.getElementById("rps-score");
+      const resetBtn = document.getElementById("rps-reset");
+      const p1MoveEl = document.getElementById("p1-move");
+      const p2MoveEl = document.getElementById("p2-move");
+      const playerTurnDiv = document.getElementById("player-turn");
+
+      function setStatus(msg, type) {
+        statusDiv.textContent = msg;
+        statusDiv.classList.remove("win", "lose", "tie");
+        if (type) statusDiv.classList.add(type);
+      }
+      function setPlayerTurn(msg) {
+        playerTurnDiv.textContent = msg;
+      }
+      function updateMoves(show = false) {
+        p1MoveEl.textContent = show && p1Choice ? emojis[p1Choice] : "❔";
+        p2MoveEl.textContent = show && p2Choice ? emojis[p2Choice] : "❔";
+      }
+      function resetGame() {
+        p1Score = p2Score = 0;
+        p1Choice = p2Choice = null;
+        turn = 1;
+        setStatus("\xa0");
+        scoreDiv.textContent = `P1: 0 | P2: 0`;
+        setPlayerTurn("Player 1, press your key!");
+        updateMoves(false);
+      }
+      function handleP1Input(key) {
+        if (turn !== 1) return;
+        p1Choice = p1Keys[key];
+        updateMoves(false);
+        setPlayerTurn("Player 2, press your Numpad key!");
+        turn = 2;
+      }
+      function handleP2Input(key) {
+        if (turn !== 2) return;
+        p2Choice = p2Keys[key];
+        p1MoveEl.textContent = emojis[p1Choice];
+        p2MoveEl.textContent = emojis[p2Choice];
+        let result = "";
+        if (p1Choice === p2Choice) {
+          result = "It's a tie!";
+          setStatus(result, "tie");
+        } else if (
+          (p1Choice === "rock" && p2Choice === "scissors") ||
+          (p1Choice === "paper" && p2Choice === "rock") ||
+          (p1Choice === "scissors" && p2Choice === "paper")
+        ) {
+          p1Score++;
+          result = "Player 1 wins!";
+          setStatus(result, "win");
+        } else {
+          p2Score++;
+          result = "Player 2 wins!";
+          setStatus(result, "lose");
+        }
+        scoreDiv.textContent = `P1: ${p1Score} | P2: ${p2Score}`;
+        setPlayerTurn("Press any valid key to start next round.");
+        turn = 0;
+      }
+
+      function handleNextRound(key) {
+        if (p1Keys[key]) {
+          p1Choice = null;
+          p2Choice = null;
+          setStatus("\xa0");
+          setPlayerTurn("Player 1, press your key!");
+          updateMoves(false);
+          turn = 1;
+        }
+      }
+
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        const keyLower = e.key.toLowerCase();
+        if (turn === 1) {
+          if (p1Keys[keyLower]) handleP1Input(keyLower);
+        } else if (turn === 2) {
+          if (p2Keys[e.code]) handleP2Input(e.code);
+        } else if (turn === 0) {
+          if (p1Keys[keyLower]) handleNextRound(keyLower);
+        }
+      });
+      resetBtn.addEventListener("click", resetGame);
+
+      resetGame();
+    </script>
+  </body>
+</html>

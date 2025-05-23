@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>بازی دوز</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background: #f7faff;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Segoe UI", "Vazirmatn", "Roboto", Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 430px;
+        margin: 44px auto 0 auto;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(25, 130, 196, 0.1);
+        padding: 2.2rem 1.5rem 2.2rem 1.5rem;
+        text-align: center;
+      }
+
+      .xo-animated {
+        margin: 0 auto 16px auto;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+      }
+      .xo-x,
+      .xo-o {
+        font-size: 2.7rem;
+        font-weight: bold;
+        display: inline-block;
+        animation: popXO 1.8s infinite alternate
+          cubic-bezier(0.7, 1.4, 0.4, 0.9);
+      }
+      .xo-o {
+        color: #1982c4;
+        animation-delay: 0.7s;
+      }
+      .xo-x {
+        color: #ff595e;
+      }
+      @keyframes popXO {
+        0% {
+          transform: scale(0.94) rotate(-8deg);
+        }
+        70% {
+          transform: scale(1.11) rotate(6deg);
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+      }
+
+      h1 {
+        font-size: 2rem;
+        color: #222;
+        font-weight: 700;
+        margin-bottom: 0.3em;
+        letter-spacing: 1px;
+      }
+
+      .game-board {
+        display: grid;
+        grid-template-columns: repeat(3, 92px);
+        grid-template-rows: repeat(3, 92px);
+        gap: 10px;
+        margin: 1.5em auto 1.5em auto;
+        background: #e9e9f2;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px #1982c425;
+        justify-content: center;
+        align-items: center;
+        width: max-content;
+      }
+      .grid_cells {
+        background: linear-gradient(135deg, #fff 80%, #f3f3ff 100%);
+        border-radius: 15px;
+        font-size: 2.8rem;
+        color: #1982c4;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 6px #1982c41a;
+        user-select: none;
+        transition: background 0.13s, transform 0.1s;
+      }
+      .grid_cells:hover {
+        background: #ffeccf;
+        transform: scale(1.045);
+      }
+      .grid_cells.filled-x {
+        color: #ff595e;
+      }
+      .grid_cells.filled-o {
+        color: #1982c4;
+      }
+      .grid_cells.filled-tie {
+        color: #ffc43a;
+      }
+
+      .status {
+        font-size: 1.29rem;
+        margin-top: 10px;
+        color: #16b500;
+        min-height: 2.4em;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .turn-status {
+        color: #1982c4;
+        font-size: 1.09rem;
+        margin-bottom: 6px;
+        min-height: 1.7em;
+        font-weight: 500;
+        letter-spacing: 0.8px;
+      }
+
+      .btn-row {
+        margin-top: 2.2em;
+        display: flex;
+        justify-content: center;
+        gap: 1.3em;
+      }
+      .game-btn,
+      .rps-home {
+        background: linear-gradient(90deg, #1982c4 60%, #ffca3a 100%);
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        padding: 0.62em 1.6em;
+        font-size: 1.07rem;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 1px 8px rgba(25, 130, 196, 0.07);
+        transition: background 0.15s, color 0.15s, transform 0.1s;
+      }
+      .game-btn:hover,
+      .rps-home:hover {
+        background: linear-gradient(90deg, #ff595e 60%, #ffca3a 100%);
+        color: #fff;
+        transform: scale(1.06);
+      }
+      .game-btn:active,
+      .rps-home:active {
+        filter: brightness(0.95);
+      }
+      @media (max-width: 520px) {
+        .container {
+          max-width: 99vw;
+        }
+        .game-board {
+          grid-template-columns: repeat(3, 28vw);
+          grid-template-rows: repeat(3, 28vw);
+          max-width: 94vw;
+          max-height: 94vw;
+        }
+        .grid_cells {
+          font-size: 2.1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="xo-animated" aria-hidden="true">
+        <span class="xo-x">X</span>
+        <span class="xo-o">O</span>
+        <span class="xo-x">X</span>
+      </div>
+      <h1>بازی دوز (X-O)</h1>
+      <div class="game-board grid_div">
+        <div id="cell1" class="grid_cells"></div>
+        <div id="cell2" class="grid_cells"></div>
+        <div id="cell3" class="grid_cells"></div>
+        <div id="cell4" class="grid_cells"></div>
+        <div id="cell5" class="grid_cells"></div>
+        <div id="cell6" class="grid_cells"></div>
+        <div id="cell7" class="grid_cells"></div>
+        <div id="cell8" class="grid_cells"></div>
+        <div id="cell9" class="grid_cells"></div>
+      </div>
+
+      <div class="turn-status" id="turnText"></div>
+      <div class="status" id="statusText"></div>
+      <div class="btn-row">
+        <button id="restartBtn" class="game-btn" style="display: none">
+          شروع دوباره
+        </button>
+        <button class="rps-home" onclick="window.location.href='index.html'">
+          رفتن به خانه
+        </button>
+      </div>
+    </div>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get("mode");
+      const level = urlParams.get("level");
+
+      let turn = "X";
+      let gameOver = false;
+      const statusText = document.getElementById("statusText");
+      const turnText = document.getElementById("turnText");
+      const restartBtn = document.getElementById("restartBtn");
+      const cells = Array.from({ length: 9 }, (_, i) =>
+        document.getElementById("cell" + (i + 1))
+      );
+
+      turnText.textContent = `نوبت ${turn}`;
+
+      const winningCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      function getBoard() {
+        return cells.map((c) => c.textContent || "");
+      }
+
+      function checkWinner() {
+        for (const [a, b, c] of winningCombos) {
+          if (
+            cells[a].textContent &&
+            cells[a].textContent === cells[b].textContent &&
+            cells[a].textContent === cells[c].textContent
+          ) {
+            statusText.textContent = `بازیکن ${cells[a].textContent} برنده شد!`;
+            [a, b, c].forEach((idx) => {
+              cells[idx].classList.add(
+                cells[a].textContent === "X" ? "filled-x" : "filled-o"
+              );
+            });
+            gameOver = true;
+            restartBtn.style.display = "inline-block";
+            return;
+          }
+        }
+        if (cells.every((cell) => cell.textContent !== "")) {
+          statusText.textContent = "بازی مساوی شد!";
+          cells.forEach((cell) => cell.classList.add("filled-tie"));
+          gameOver = true;
+          restartBtn.style.display = "inline-block";
+        }
+      }
+
+      function easyMove() {
+        let empty = cells.filter((c) => c.textContent === "");
+        if (empty.length === 0) return;
+        let rand = empty[Math.floor(Math.random() * empty.length)];
+        rand.textContent = "O";
+        rand.classList.add("filled-o");
+      }
+
+      function minimax(board, depth, isMaximizing) {
+        const winner = evaluate(board);
+        if (winner !== null) return winner;
+
+        if (isMaximizing) {
+          let bestScore = -Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+              board[i] = "O";
+              let score = minimax(board, depth + 1, false);
+              board[i] = "";
+              bestScore = Math.max(score, bestScore);
+            }
+          }
+          return bestScore;
+        } else {
+          let bestScore = Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+              board[i] = "X";
+              let score = minimax(board, depth + 1, true);
+              board[i] = "";
+              bestScore = Math.min(score, bestScore);
+            }
+          }
+          return bestScore;
+        }
+      }
+
+      function evaluate(board) {
+        for (const [a, b, c] of winningCombos) {
+          if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return board[a] === "O" ? 1 : -1;
+          }
+        }
+        if (!board.includes("")) return 0;
+        return null;
+      }
+
+      function hardMove() {
+        let board = getBoard();
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < 9; i++) {
+          if (board[i] === "") {
+            board[i] = "O";
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if (score > bestScore) {
+              bestScore = score;
+              move = i;
+            }
+          }
+        }
+        if (move !== undefined) {
+          cells[move].textContent = "O";
+          cells[move].classList.add("filled-o");
+        }
+      }
+
+      function cpuMove() {
+        if (gameOver) return;
+        if (level === "hard") {
+          hardMove();
+        } else {
+          easyMove();
+        }
+        checkWinner();
+        if (!gameOver) {
+          turn = "X";
+          turnText.textContent = `نوبت ${turn}`;
+        }
+      }
+
+      cells.forEach((cell) => {
+        cell.addEventListener("click", () => {
+          if (gameOver || cell.textContent !== "") return;
+
+          if (mode === "2p") {
+            cell.textContent = turn;
+            cell.classList.add(turn === "X" ? "filled-x" : "filled-o");
+            checkWinner();
+            if (!gameOver) {
+              turn = turn === "X" ? "O" : "X";
+              turnText.textContent = `نوبت ${turn}`;
+            }
+          } else if (mode === "cpu") {
+            if (turn === "X") {
+              cell.textContent = "X";
+              cell.classList.add("filled-x");
+              checkWinner();
+              if (!gameOver) {
+                turn = "O";
+                turnText.textContent = `نوبت ${turn}`;
+                setTimeout(cpuMove, 380);
+              }
+            }
+          }
+        });
+      });
+
+      restartBtn.addEventListener("click", () => {
+        cells.forEach((cell) => {
+          cell.textContent = "";
+          cell.classList.remove("filled-x", "filled-o", "filled-tie");
+        });
+        gameOver = false;
+        turn = "X";
+        statusText.textContent = "";
+        turnText.textContent = `نوبت ${turn}`;
+        restartBtn.style.display = "none";
+      });
+    </script>
+  </body>
+</html>

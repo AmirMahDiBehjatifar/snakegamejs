@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <title>بازی دوز</title>
+    <style>
+      .grid_div {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        background-color: blue;
+        width: 210px;
+        height: auto;
+        margin: 50px auto;
+      }
+
+      .grid_cells {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        margin: 5px;
+        background-color: red;
+        width: 50px;
+        height: 50px;
+        font-size: 30px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .status {
+        text-align: center;
+        font-size: 24px;
+        margin-top: 20px;
+        color: darkgreen;
+      }
+
+      #restartBtn {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid_div">
+      <div id="cell1" class="grid_cells"></div>
+      <div id="cell2" class="grid_cells"></div>
+      <div id="cell3" class="grid_cells"></div>
+      <div id="cell4" class="grid_cells"></div>
+      <div id="cell5" class="grid_cells"></div>
+      <div id="cell6" class="grid_cells"></div>
+      <div id="cell7" class="grid_cells"></div>
+      <div id="cell8" class="grid_cells"></div>
+      <div id="cell9" class="grid_cells"></div>
+    </div>
+
+    <div class="status" id="statusText"></div>
+    <div class="status" id="turnText"></div>
+    <div class="status">
+      <button id="restartBtn" style="display: none">شروع دوباره</button>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get("mode");
+      const level = urlParams.get("level");
+
+      let turn = "X";
+      let gameOver = false;
+      const statusText = document.getElementById("statusText");
+      const turnText = document.getElementById("turnText");
+      const restartBtn = document.getElementById("restartBtn");
+      const cells = Array.from({ length: 9 }, (_, i) =>
+        document.getElementById("cell" + (i + 1))
+      );
+
+      turnText.textContent = `نوبت ${turn}`;
+
+      const winningCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      function getBoard() {
+        return cells.map((c) => c.textContent || "");
+      }
+
+      function checkWinner() {
+        for (const [a, b, c] of winningCombos) {
+          if (
+            cells[a].textContent &&
+            cells[a].textContent === cells[b].textContent &&
+            cells[a].textContent === cells[c].textContent
+          ) {
+            statusText.textContent = `بازیکن ${cells[a].textContent} برنده شد!`;
+            gameOver = true;
+            restartBtn.style.display = "inline-block";
+            return;
+          }
+        }
+        if (cells.every((cell) => cell.textContent !== "")) {
+          statusText.textContent = "بازی مساوی شد!";
+          gameOver = true;
+          restartBtn.style.display = "inline-block";
+        }
+      }
+
+      function easyMove() {
+        let empty = cells.filter((c) => c.textContent === "");
+        if (empty.length === 0) return;
+        let rand = empty[Math.floor(Math.random() * empty.length)];
+        rand.textContent = "O";
+      }
+
+      function minimax(board, depth, isMaximizing) {
+        const winner = evaluate(board);
+        if (winner !== null) return winner;
+
+        if (isMaximizing) {
+          let bestScore = -Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+              board[i] = "O";
+              let score = minimax(board, depth + 1, false);
+              board[i] = "";
+              bestScore = Math.max(score, bestScore);
+            }
+          }
+          return bestScore;
+        } else {
+          let bestScore = Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === "") {
+              board[i] = "X";
+              let score = minimax(board, depth + 1, true);
+              board[i] = "";
+              bestScore = Math.min(score, bestScore);
+            }
+          }
+          return bestScore;
+        }
+      }
+
+      function evaluate(board) {
+        for (const [a, b, c] of winningCombos) {
+          if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return board[a] === "O" ? 1 : -1;
+          }
+        }
+        if (!board.includes("")) return 0;
+        return null;
+      }
+
+      function hardMove() {
+        let board = getBoard();
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < 9; i++) {
+          if (board[i] === "") {
+            board[i] = "O";
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if (score > bestScore) {
+              bestScore = score;
+              move = i;
+            }
+          }
+        }
+        if (move !== undefined) {
+          cells[move].textContent = "O";
+        }
+      }
+
+      function cpuMove() {
+        if (gameOver) return;
+        if (level === "hard") {
+          hardMove();
+        } else {
+          easyMove();
+        }
+        checkWinner();
+        if (!gameOver) {
+          turn = "X";
+          turnText.textContent = `نوبت ${turn}`;
+        }
+      }
+
+      cells.forEach((cell) => {
+        cell.addEventListener("click", () => {
+          if (gameOver || cell.textContent !== "") return;
+
+          if (mode === "2p") {
+            cell.textContent = turn;
+            checkWinner();
+            if (!gameOver) {
+              turn = turn === "X" ? "O" : "X";
+              turnText.textContent = `نوبت ${turn}`;
+            }
+          } else if (mode === "cpu") {
+            if (turn === "X") {
+              cell.textContent = "X";
+              checkWinner();
+              if (!gameOver) {
+                turn = "O";
+                turnText.textContent = `نوبت ${turn}`;
+                setTimeout(cpuMove, 300);
+              }
+            }
+          }
+        });
+      });
+
+      restartBtn.addEventListener("click", () => {
+        cells.forEach((cell) => (cell.textContent = ""));
+        gameOver = false;
+        turn = "X";
+        statusText.textContent = "";
+        turnText.textContent = `نوبت ${turn}`;
+        restartBtn.style.display = "none";
+      });
+    </script>
+  </body>
+</html>

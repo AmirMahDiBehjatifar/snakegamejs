@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rock Paper Scissors | Abanda Playroom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .rps-container {
+        max-width: 370px;
+        margin: 42px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(25, 130, 196, 0.1);
+        padding: 2rem 1.5rem 2.5rem 1.5rem;
+        text-align: center;
+        font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+      }
+      .rps-title {
+        font-size: 1.45rem;
+        font-weight: bold;
+        margin-bottom: 1.2rem;
+      }
+      .rps-moves-show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2.2rem;
+        margin-bottom: 0.7rem;
+        margin-top: 0.5rem;
+        min-height: 64px;
+      }
+      .rps-move-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.14rem;
+      }
+      .rps-move-label {
+        font-size: 1rem;
+        color: #888;
+        margin-bottom: 0.18rem;
+        letter-spacing: 0.6px;
+      }
+      .rps-move-emoji {
+        min-width: 52px;
+        min-height: 52px;
+        text-align: center;
+        font-size: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: popIn 0.5s cubic-bezier(0.6, 2, 0.4, 0.9);
+      }
+      .rps-vs {
+        font-size: 1.55rem;
+        font-weight: bold;
+        color: #ff595e;
+        margin: 0 0.5rem;
+        letter-spacing: 2px;
+        animation: pulseVs 1s infinite alternate;
+        user-select: none;
+      }
+      @keyframes pulseVs {
+        0% {
+          color: #ff595e;
+          transform: scale(1);
+          text-shadow: 0 2px 10px #ff595e44;
+        }
+        100% {
+          color: #1982c4;
+          transform: scale(1.18);
+          text-shadow: 0 4px 16px #1982c488;
+        }
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0.7) rotate(-30deg);
+          opacity: 0.2;
+        }
+        80% {
+          transform: scale(1.18) rotate(7deg);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+      }
+      .rps-choices {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      .rps-btn {
+        background: linear-gradient(90deg, #ff595e 60%, #ffca3a 100%);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        font-size: 2.4rem;
+        cursor: pointer;
+        transition: transform 0.15s;
+        box-shadow: 0 1px 8px rgba(25, 130, 196, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+      .rps-btn[data-choice="paper"] {
+        background: linear-gradient(90deg, #1982c4 60%, #6a4c93 100%);
+      }
+      .rps-btn[data-choice="scissors"] {
+        background: linear-gradient(90deg, #ffca3a 60%, #ff595e 100%);
+      }
+      .rps-btn:focus {
+        outline: 2px solid #1982c4;
+      }
+      .rps-btn:hover {
+        transform: scale(1.12);
+      }
+      .rps-status {
+        font-size: 1.13rem;
+        min-height: 28px;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+        margin-top: 0.7rem;
+        letter-spacing: 0.1px;
+        color: #ff595e;
+        text-shadow: 0 2px 10px #ffca3a33, 0 1px 1px #fff;
+        animation: popIn 0.4s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.win {
+        color: #16b500;
+        text-shadow: 0 1px 8px #8ac92644;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.lose {
+        color: #ff595e;
+        text-shadow: 0 1px 8px #ff595e33;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-status.tie {
+        color: #1982c4;
+        text-shadow: 0 1px 8px #1982c433;
+        animation: popIn 0.48s cubic-bezier(0.7, 1.5, 0.4, 0.9);
+      }
+      .rps-score {
+        margin: 1.2rem 0 0.5rem 0;
+        font-size: 1.08rem;
+        color: #888;
+      }
+      .rps-reset {
+        margin-top: 1.3rem;
+        background: #fff;
+        border: 2px solid #ff595e;
+        color: #ff595e;
+        border-radius: 8px;
+        padding: 0.45em 1.2em;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .rps-home {
+        margin-top: 1.3rem;
+        background: #fff;
+        border: 2px solid #360bf5;
+        color: #0077ff;
+        border-radius: 8px;
+        padding: 0.45em 1.2em;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .rps-reset:hover {
+        background: #ff595e;
+        color: #fff;
+      }
+      @media (max-width: 450px) {
+        .rps-container {
+          max-width: 99vw;
+        }
+        .rps-moves-show {
+          gap: 0.6rem;
+        }
+        .rps-choices {
+          gap: 0.7rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rps-container">
+      <div class="rps-title">Rock Paper Scissors</div>
+      <div class="rps-moves-show" id="rps-moves-show">
+        <div class="rps-move-block">
+          <span class="rps-move-label">You</span>
+          <span class="rps-move-emoji" id="user-move">❔</span>
+        </div>
+        <span class="rps-vs">VS</span>
+        <div class="rps-move-block">
+          <span class="rps-move-label">Bot</span>
+          <span class="rps-move-emoji" id="comp-move">❔</span>
+        </div>
+      </div>
+      <div class="rps-status" id="rps-status">Choose your move!</div>
+      <div class="rps-choices">
+        <button class="rps-btn" data-choice="rock" aria-label="Rock">✊</button>
+        <button class="rps-btn" data-choice="paper" aria-label="Paper">
+          ✋
+        </button>
+        <button class="rps-btn" data-choice="scissors" aria-label="Scissors">
+          ✌️
+        </button>
+      </div>
+      <div class="rps-score" id="rps-score">You: 0 | Computer: 0</div>
+      <button class="rps-reset" id="rps-reset">Reset</button>
+      <button
+        class="rps-home"
+        id="rps-home"
+        onclick="window.location.href='../RPSGamev0/rps2players.html'"
+      >
+        Multi Player
+      </button>
+    </div>
+    <script>
+      const choices = ["rock", "paper", "scissors"];
+      const emojis = { rock: "✊", paper: "✋", scissors: "✌️" };
+      let userScore = 0,
+        compScore = 0;
+
+      const statusDiv = document.getElementById("rps-status");
+      const scoreDiv = document.getElementById("rps-score");
+      const resetBtn = document.getElementById("rps-reset");
+      const userMoveEl = document.getElementById("user-move");
+      const compMoveEl = document.getElementById("comp-move");
+
+      function setStatus(msg, type) {
+        statusDiv.textContent = msg;
+        statusDiv.classList.remove("win", "lose", "tie");
+        if (type) statusDiv.classList.add(type);
+      }
+
+      document.querySelectorAll(".rps-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const userChoice = btn.getAttribute("data-choice");
+          const compChoice = choices[Math.floor(Math.random() * 3)];
+          let result = "";
+
+          // Show moves with animation
+          userMoveEl.textContent = emojis[userChoice];
+          userMoveEl.style.animation = "none";
+          setTimeout(() => (userMoveEl.style.animation = ""), 10);
+
+          compMoveEl.textContent = emojis[compChoice];
+          compMoveEl.style.animation = "none";
+          setTimeout(() => (compMoveEl.style.animation = ""), 10);
+
+          if (userChoice === compChoice) {
+            result = "It's a tie!";
+            setStatus(result, "tie");
+          } else if (
+            (userChoice === "rock" && compChoice === "scissors") ||
+            (userChoice === "paper" && compChoice === "rock") ||
+            (userChoice === "scissors" && compChoice === "paper")
+          ) {
+            userScore++;
+            result = `You win! ${emojis[userChoice]} beats ${emojis[compChoice]}`;
+            setStatus(result, "win");
+          } else {
+            compScore++;
+            result = `You lose! ${emojis[compChoice]} beats ${emojis[userChoice]}`;
+            setStatus(result, "lose");
+          }
+          scoreDiv.textContent = `You: ${userScore} | Computer: ${compScore}`;
+        });
+      });
+
+      resetBtn.addEventListener("click", () => {
+        userScore = 0;
+        compScore = 0;
+        setStatus("Choose your move!");
+        scoreDiv.textContent = `You: 0 | Computer: 0`;
+        userMoveEl.textContent = "❔";
+        compMoveEl.textContent = "❔";
+      });
+    </script>
+  </body>
+</html>
